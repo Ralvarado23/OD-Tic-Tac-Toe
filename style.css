@@ -1,0 +1,76 @@
+@font-face {
+    font-family: Breaking;
+    src: url("./resources/font/Breaking.ttf");
+}
+
+body {
+    margin: 0;
+}
+
+.title {
+    font-family: Breaking;
+    font-size: 6em;
+    text-align: center;
+    margin-top: 2%;
+}
+
+.menuButtonGroup {
+    display: grid;
+    width: 60%;
+    margin: 0px auto;
+    gap: 15px;
+    margin-top: 5%;
+}
+
+button {
+    background-color: white;
+    color: black;
+    font-family: Breaking;
+    font-size: 35px;
+    border: 2px solid #e7e7e7;
+    padding: 15px 32px;
+    text-align: center;
+    display: inline-block;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e7e7e7;
+}
+
+#gameView {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#returnButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: 0;
+}
+
+#gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(100px, 200px));
+    justify-content: center;
+    width: 45%;
+    margin: 0 auto;
+    margin-top: 3%;
+    gap: 20px;
+}
+
+.gamecell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fffef6;
+    font-size: 100px;
+    font-family: Breaking;
+    border: solid 2px gray;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    user-select: none;
+    aspect-ratio: 1 / 1;
+}
