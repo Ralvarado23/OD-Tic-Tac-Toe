@@ -95,12 +95,24 @@ const GameBoard = (() => {
 
             // Se comprueba si ha terminado la partida
             let gameWon = checkGameStatus()
+            let gameMessageDiv = document.getElementById('gameMessage')
 
             if(gameWon == "Win"){
-                alert(`${activePlayer.mark} won the game.`)
+                gameMessageDiv.textContent = `${activePlayer.mark} won the game!`
+                gameMessageDiv.style.display = "block"
+
+                function ocultarDiv() {
+                    gameMessageDiv.style.display = "none"
+                }
+
+                setTimeout(ocultarDiv, 1000)
+
                 create(player1, player2)
             } else if(gameWon == "Tie"){
-                alert(`It's a Tie.`)
+                gameMessageDiv.textContent = `It's a Tie!`
+                gameMessageDiv.style.display = "block"
+
+
                 create(player1, player2)
             } else {
                 // Se cambia el turno de jugador
