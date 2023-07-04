@@ -14,8 +14,23 @@ body {
     margin-top: 1%;
 }
 
-header button {
-    display: none;
+#ingameHeader {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#playersInfo {
+    text-align: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 19%;
+    margin: 0 auto;
+    color: black;
+    font-family: Breaking;
+    font-size: 50px;
+}
+
+#gameButtonGroup button {
     position: absolute;
     top: 0;
     border: 0;
@@ -25,19 +40,19 @@ header button {
     right: 0;
 }
 
-.menuButtonGroup {
+#menuButtonGroup {
     display: grid;
-    width: 60%;
+    width: -moz-fit-content;
+    width: fit-content;
     margin: 0px auto;
     gap: 15px;
-    margin-top: 5%;
 }
 
 button {
     background-color: white;
     color: black;
     font-family: Breaking;
-    font-size: 35px;
+    font-size: 50px;
     border: 2px solid #e7e7e7;
     padding: 15px 32px;
     text-align: center;
@@ -70,15 +85,20 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #fffef6;
+    background-color: white;
     font-size: 100px;
     font-family: Breaking;
     border: solid 2px gray;
+    border-radius: 15px;
     box-sizing: border-box;
     -webkit-user-select: none;
     user-select: none;
     aspect-ratio: 1 / 1;
     cursor: pointer;
+}
+
+.gamecell:hover{
+    background-color: #e7e7e7;
 }
 
 #gameMessage {
@@ -93,5 +113,7 @@ button:hover {
     color: white;
     font-family: Breaking;
     font-size: 6em;
-    text-align: center;    
+    text-align: center;
+    -webkit-user-select: none;
+    user-select: none;
 }

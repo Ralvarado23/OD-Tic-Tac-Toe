@@ -2,8 +2,8 @@
 /**** START MENU ****/
 /********************/
 
-const buttonPvP = document.getElementById('buttonPvP')
-const buttonPvAI = document.getElementById('buttonPvAI')
+const buttonPvP = document.getElementById("buttonPvP")
+const buttonPvAI = document.getElementById("buttonPvAI")
 
 buttonPvP.onclick = () => {
     startGame()
@@ -37,7 +37,7 @@ const GameBoard = (() => {
             board[i] = []
 
             for (let j = 0; j < boardSize; j++) {
-                board[i][j] = "-"
+                board[i][j] = ""
             }
         }
 
@@ -62,14 +62,14 @@ const GameBoard = (() => {
         // Se recorre el board y se crea un elemento gamecell con el valor asignado
         let index = 0
         
-        let gameboardDiv = document.getElementById('gameboard')
+        let gameboardDiv = document.getElementById("gameboard")
         gameboardDiv.textContent = ""
 
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
 
-                let gamecellDiv = document.createElement('div')
-                gamecellDiv.classList.add('gamecell')
+                let gamecellDiv = document.createElement("div")
+                gamecellDiv.classList.add("gamecell")
                 gamecellDiv.textContent = board[i][j]
 
                 gamecellDiv.setAttribute("data-index", index)
@@ -87,7 +87,7 @@ const GameBoard = (() => {
 
         // console.log({cellIndex, boardSize, xPosition, yPosition})
 
-        if(board[xPosition][yPosition] == "-") {
+        if(board[xPosition][yPosition] == "") {
             board[xPosition][yPosition] = activePlayer.mark
             // console.log(board)
 
@@ -95,7 +95,7 @@ const GameBoard = (() => {
 
             // Se comprueba si ha terminado la partida
             let gameWon = checkGameStatus()
-            let gameMessageDiv = document.getElementById('gameMessage')
+            let gameMessageDiv = document.getElementById("gameMessage")
 
             if(gameWon == "Win"){
                 gameMessageDiv.textContent = `${activePlayer.mark} won the game!`
@@ -112,6 +112,12 @@ const GameBoard = (() => {
                 gameMessageDiv.textContent = `It's a Tie!`
                 gameMessageDiv.style.display = "block"
 
+                function ocultarDiv() {
+                    gameMessageDiv.style.display = "none"
+                }
+
+                setTimeout(ocultarDiv, 1000)
+
 
                 create(player1, player2)
             } else {
@@ -127,30 +133,30 @@ const GameBoard = (() => {
     const checkGameStatus = () => {
         // Comprobar victoria por alineación horizontal
         for (let boardRow = 0; boardRow < 3; boardRow++) {
-            if (board[boardRow][0] === board[boardRow][1] && board[boardRow][0] === board[boardRow][2] && board[boardRow][0] != "-") {
+            if (board[boardRow][0] === board[boardRow][1] && board[boardRow][0] === board[boardRow][2] && board[boardRow][0] != "") {
                 return "Win"
             }
         }
         
         // Comprobar victoria por alineación vertical
         for (let boardColumn = 0; boardColumn < 3; boardColumn++) {
-            if (board[0][boardColumn] === board[1][boardColumn] && board[0][boardColumn] === board[2][boardColumn] && board[0][boardColumn] != "-") {
+            if (board[0][boardColumn] === board[1][boardColumn] && board[0][boardColumn] === board[2][boardColumn] && board[0][boardColumn] != "") {
                 return "Win"
             }
         }
         
         // Comprobar victoria por alineación diagonal
-        if (board[0][0] === board[1][1] && board[0][0] === board[2][2] && board[0][0] != "-") {
+        if (board[0][0] === board[1][1] && board[0][0] === board[2][2] && board[0][0] != "") {
             return "Win"
         }
-        if (board[0][2] === board[1][1] && board[0][2] === board[2][0] && board[0][2] != "-") {
+        if (board[0][2] === board[1][1] && board[0][2] === board[2][0] && board[0][2] != "") {
             return "Win"
         }
         
         // No hay alineación de 3 elementos
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
-                if (board[i][j] == "-"){
+                if (board[i][j] == ""){
                     return false
                 }
             }
@@ -163,17 +169,6 @@ const GameBoard = (() => {
 })()
 
 const startGame = () => {
-    let menuButtonsDiv = document.getElementsByClassName('menuButtonGroup')[0]
-    menuButtonsDiv.style.display = 'none'
-
-    let gameView = document.getElementById("gameView")
-    gameView.style.visibility = 'visible'
-    gameView.style.opacity = 1
-    gameView.style.transition = "ease-in-out 1s"
-
-    let returnButton = document.getElementById("returnButton")
-    returnButton.onclick = () => returnToMenu()
-
     // Se generan 2 jugadores
     let player1 = playerFactory("X", "player")
     let player2 = null
@@ -186,14 +181,47 @@ const startGame = () => {
 
     // Se muestra el tablero
     GameBoard.create(player1, player2)
+    loadGameView(player1, player2)
+}
+
+const loadGameView = (player1, player2) => {
+    let title = document.getElementsByClassName("title")[0]
+    title.style.display = "none"
+    
+    let menuButtonsDiv = document.getElementById("menuButtonGroup")
+    menuButtonsDiv.style.display = "none"
+
+    let gameView = document.getElementById("gameView")
+    gameView.style.visibility = "visible"
+    gameView.style.opacity = 1
+    gameView.style.transition = "ease-in-out 1s"
+
+    let gameButtons = document.getElementById("ingameHeader")
+    gameButtons.style.visibility = "visible"
+    gameButtons.style.opacity = 1
+    gameButtons.style.transition = "ease-in-out 1s"
+
+    let returnButton = document.getElementById("returnButton")
+    returnButton.onclick = () => returnToMenu()
+
+    let restartButton = document.getElementById("restartButton")
+    restartButton.onclick = () => GameBoard.create(player1, player2)
 }
 
 const returnToMenu = () => {
     let gameView = document.getElementById("gameView")
-    gameView.style.visibility = 'hidden'
+    gameView.style.visibility = "hidden"
     gameView.style.opacity = 0
     gameView.style.transition = "none"
 
-    let menuButtonsDiv = document.getElementsByClassName('menuButtonGroup')[0]
-    menuButtonsDiv.style.display = 'grid'
+    let gameButtons = document.getElementById("ingameHeader")
+    gameButtons.style.visibility = "hidden"
+    gameButtons.style.opacity = 0
+    gameButtons.style.transition = "none"
+
+    let title = document.getElementsByClassName("title")[0]
+    title.style.display = "block"
+
+    let menuButtonsDiv = document.getElementById("menuButtonGroup")
+    menuButtonsDiv.style.display = "grid"
 }
