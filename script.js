@@ -6,7 +6,11 @@ const buttonPvP = document.getElementById("buttonPvP")
 const buttonPvAI = document.getElementById("buttonPvAI")
 
 buttonPvP.onclick = () => {
-    startGame()
+    startGame("PVP")
+}
+
+buttonPvAI.onclick = () => {
+    startGame("PVAI")
 }
 
 /***************/
@@ -14,9 +18,12 @@ buttonPvP.onclick = () => {
 /***************/
 
 const playerFactory = (mark, type) => {
-    let gamesWon = 0
-    const addGameWon = () => gamesWon++
-    return {mark, type, gamesWon, addGameWon}
+    return {
+        mark,
+        type,
+        gamesWon: 0,
+        addGameWon() { this.gamesWon++}
+    }
 }
 
 /*****************/
@@ -47,7 +54,6 @@ const GameBoard = (() => {
         player2 = p2
 
         updateActivePlayer()
-        // console.log(activePlayer)
     }
 
     const updateActivePlayer = () => {
@@ -97,29 +103,53 @@ const GameBoard = (() => {
             let gameWon = checkGameStatus()
             let gameMessageDiv = document.getElementById("gameMessage")
 
-            if(gameWon == "Win"){
-                gameMessageDiv.textContent = `${activePlayer.mark} won the game!`
-                gameMessageDiv.style.display = "block"
+            if(gameWon.result == "Win"){
 
-                function ocultarDiv() {
-                    gameMessageDiv.style.display = "none"
+                // Se desactiva el tablero
+                let gameCells = document.getElementsByClassName("gamecell")
+
+                for (let i = 0; i < gameCells.length; i++) {
+                    gameCells[i].onclick = undefined
                 }
 
-                setTimeout(ocultarDiv, 1000)
-
-                create(player1, player2)
-            } else if(gameWon == "Tie"){
-                gameMessageDiv.textContent = `It's a Tie!`
-                gameMessageDiv.style.display = "block"
-
-                function ocultarDiv() {
-                    gameMessageDiv.style.display = "none"
+                // Se muestra la jugada ganadora en verde
+                for (let i = 0; i < gameWon.winningPlay.length; i++) {
+                    let [x, y] = gameWon.winningPlay[i]
+                    winningCellIndex = x*3+y
+                    const winningCell = document.querySelector(`.gamecell[data-index="${winningCellIndex}"]`)
+                    winningCell.classList.add('transitionEnd')
+                    setTimeout(()=> winningCell.style.backgroundColor  = "#00f586", 1)
                 }
 
-                setTimeout(ocultarDiv, 1000)
+                // Se actualizan las puntuaciones al ganar un jugador
+                activePlayer == player1? player1.addGameWon() : player2.addGameWon()
+                
+                let playerXscore = document.getElementById('playerXscore')
+                playerXscore.textContent = player1.gamesWon
 
+                let playerOscore = document.getElementById('playerOscore')
+                playerOscore.textContent = player2.gamesWon
 
-                create(player1, player2)
+                setTimeout(() => {
+                    gameMessageDiv.style.display = "none"
+                    create(player1, player2)
+                }, 1000)
+
+            } else if(gameWon.result == "Tie"){
+
+                // Se muestra en amarillo el tablero
+                let gameCells = document.getElementsByClassName("gamecell")
+
+                for (let i = 0; i < gameCells.length; i++) {
+                    gameCells[i].classList.add('transitionEnd')
+                    setTimeout(()=> gameCells[i].style.backgroundColor  = "#feffc2", 1)
+                }
+
+                setTimeout(() => {
+                    gameMessageDiv.style.display = "none"
+                    create(player1, player2)
+                }, 1000)
+
             } else {
                 // Se cambia el turno de jugador
                 updateActivePlayer()
@@ -134,48 +164,48 @@ const GameBoard = (() => {
         // Comprobar victoria por alineación horizontal
         for (let boardRow = 0; boardRow < 3; boardRow++) {
             if (board[boardRow][0] === board[boardRow][1] && board[boardRow][0] === board[boardRow][2] && board[boardRow][0] != "") {
-                return "Win"
+                return {result: "Win", winningPlay: [[boardRow, 0], [boardRow, 1], [boardRow, 2]]}
             }
         }
         
         // Comprobar victoria por alineación vertical
         for (let boardColumn = 0; boardColumn < 3; boardColumn++) {
             if (board[0][boardColumn] === board[1][boardColumn] && board[0][boardColumn] === board[2][boardColumn] && board[0][boardColumn] != "") {
-                return "Win"
+                return {result: "Win", winningPlay: [[0, boardColumn], [1, boardColumn], [2, boardColumn]]}
             }
         }
         
         // Comprobar victoria por alineación diagonal
         if (board[0][0] === board[1][1] && board[0][0] === board[2][2] && board[0][0] != "") {
-            return "Win"
+            return {result: "Win", winningPlay: [[0, 0], [1, 1], [2, 2]]}
         }
         if (board[0][2] === board[1][1] && board[0][2] === board[2][0] && board[0][2] != "") {
-            return "Win"
+            return {result: "Win", winningPlay: [[0, 2], [1, 1], [2, 0]]}
         }
         
-        // No hay alineación de 3 elementos
+        // No hay situación de victoria aún
         for (let i = 0; i < boardSize; i++) {
             for (let j = 0; j < boardSize; j++) {
                 if (board[i][j] == ""){
-                    return false
+                    return {result: "Playing", winningPlay: []}
                 }
             }
         }
 
-        return "Tie"
+        return {result: "Tie", winningPlay: []}
     }
 
-    return {create, render, board} //QUITAR EL BOARD
+    return {create, render, board}
 })()
 
-const startGame = () => {
+const startGame = (gameMode) => {
     // Se generan 2 jugadores
     let player1 = playerFactory("X", "player")
     let player2 = null
 
-    if (true) {    
+    if (gameMode = "PVP") {    
         player2 = playerFactory("O", "player")
-    } else {
+    } else if (gameMode = "PVAI") {
         player2 = playerFactory("O", "AI")
     }
 
@@ -206,6 +236,12 @@ const loadGameView = (player1, player2) => {
 
     let restartButton = document.getElementById("restartButton")
     restartButton.onclick = () => GameBoard.create(player1, player2)
+
+    let playerXscore = document.getElementById('playerXscore')
+    playerXscore.textContent = player1.gamesWon
+
+    let playerOscore = document.getElementById('playerOscore')
+    playerOscore.textContent = player2.gamesWon
 }
 
 const returnToMenu = () => {

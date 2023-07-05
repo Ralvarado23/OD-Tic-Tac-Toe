@@ -19,15 +19,29 @@ body {
     opacity: 0;
 }
 
-#playersInfo {
+#playersScore {
     text-align: center;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    width: 19%;
+    grid-template-columns: repeat(2, 1fr);
+    width: -moz-fit-content;
+    width: fit-content;
     margin: 0 auto;
     color: black;
     font-family: Breaking;
-    font-size: 50px;
+    font-size: 40px;
+    gap: 60px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#playersScore p:nth-child(1), #playersScore p:nth-child(3) {
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+#playersScore p:nth-child(2), #playersScore p:nth-child(4) {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 #gameButtonGroup button {
@@ -52,13 +66,15 @@ button {
     background-color: white;
     color: black;
     font-family: Breaking;
-    font-size: 50px;
+    font-size: 40px;
     border: 2px solid #e7e7e7;
     padding: 15px 32px;
     text-align: center;
     display: inline-block;
     transition-duration: 0.4s;
     cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 button:hover {
@@ -75,7 +91,7 @@ button:hover {
     display: grid;
     grid-template-columns: repeat(3, minmax(100px, 200px));
     justify-content: center;
-    width: 45%;
+    width: 30%;
     margin: 0 auto;
     margin-top: 3%;
     gap: 20px;
@@ -86,7 +102,7 @@ button:hover {
     align-items: center;
     justify-content: center;
     background-color: white;
-    font-size: 100px;
+    font-size: 90px;
     font-family: Breaking;
     border: solid 2px gray;
     border-radius: 15px;
@@ -116,4 +132,8 @@ button:hover {
     text-align: center;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.transitionEnd {
+    transition: all  0.4s cubic-bezier(0, 0, 0.2, 1) 0s;
 }
