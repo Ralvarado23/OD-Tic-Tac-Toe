@@ -5,6 +5,7 @@
 
 body {
     margin: 0;
+    overflow: hidden;
 }
 
 .title {
@@ -28,20 +29,29 @@ body {
     margin: 0 auto;
     color: black;
     font-family: Breaking;
-    font-size: 40px;
+    font-size: 30px;
     gap: 60px;
     -webkit-user-select: none;
     user-select: none;
-}
-
-#playersScore p:nth-child(1), #playersScore p:nth-child(3) {
     margin-top: 15px;
-    margin-bottom: 0;
 }
 
-#playersScore p:nth-child(2), #playersScore p:nth-child(4) {
-    margin-top: 0;
-    margin-bottom: 0;
+#playersScore div{
+    align-self: center;
+}
+
+#playersScore p {
+    margin: 0;
+}
+
+#playerXscore, #playerOscore {
+    font-size: 40px;
+}
+
+.activePlayer {
+    border: solid 4px #5f84ff;
+    padding: 15px;
+    border-radius: 20px;
 }
 
 #gameButtonGroup button {
@@ -134,6 +144,6 @@ button:hover {
     user-select: none;
 }
 
-.transitionEnd {
-    transition: all  0.4s cubic-bezier(0, 0, 0.2, 1) 0s;
+.cellTransition {
+    transition: all  1.4s cubic-bezier(0, 0, 0.2, 1) 0s;
 }

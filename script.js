@@ -56,12 +56,68 @@ const GameBoard = (() => {
         updateActivePlayer()
     }
 
+    
+    let scoresDiv = document.getElementById('playersScore')
+
     const updateActivePlayer = () => {
         if(activePlayer != null && activePlayer == player1){
             activePlayer = player2
+
+            scoresDiv.children[1].classList.add('activePlayer')
+            scoresDiv.children[0].classList.remove('activePlayer')
+
+            // Si la IA es el jugador activo realiza un movimiento
+            if(player2.type == "AI"){
+                // Se desactiva el tablero
+                let gameCells = document.getElementsByClassName("gamecell")
+
+                for (let i = 0; i < gameCells.length; i++) {
+                    gameCells[i].onclick = undefined
+                }
+
+                IAMove()
+            }
+
         } else {
             activePlayer = player1
+
+            scoresDiv.children[0].classList.add('activePlayer')
+            scoresDiv.children[1].classList.remove('activePlayer')
         }
+    }
+
+    const IAMove = () => {
+        // Devolver posiciones libres del tablero
+        let possibleMoves = []
+        let emptyCenter = false
+        let xPosition, yPosition
+
+        for (let i = 0; i < boardSize; i++) {
+            for (let j = 0; j < boardSize; j++) {
+                if(board[i][j] == ""){
+                    possibleMoves.push([i, j])
+
+                    if(i == 1 && j == 1){
+                        emptyCenter = true
+                        break
+                    }
+                }
+            }
+        }
+
+        let randomPlay = Math.floor(Math.random() * possibleMoves.length)
+
+        // Si esta libre la posición central cogerla, si no mover aleatorio
+        if(emptyCenter){
+            xPosition = 1
+            yPosition = 1
+        } else {
+            [xPosition, yPosition] = possibleMoves[randomPlay]
+        }
+        
+        // Se asigna a la maquina un tiempo de respuesta entre 0.2s y 1s
+        let randomResponseTime = Math.floor(Math.random() * 800 + 200)
+        setTimeout(()=>{addMark(xPosition, yPosition)}, randomResponseTime)
     }
 
     const render = () => {
@@ -79,7 +135,14 @@ const GameBoard = (() => {
                 gamecellDiv.textContent = board[i][j]
 
                 gamecellDiv.setAttribute("data-index", index)
-                gamecellDiv.onclick = () => addMark(gamecellDiv.dataset.index)
+
+                gamecellDiv.onclick = () => {
+                    let cellIndex = gamecellDiv.dataset.index
+                    let xPosition = Math.floor(cellIndex / boardSize)
+                    let yPosition = cellIndex % boardSize
+                    addMark(xPosition, yPosition)
+                }
+
                 index++
                 
                 gameboardDiv.appendChild(gamecellDiv)
@@ -87,15 +150,10 @@ const GameBoard = (() => {
         }
     }
 
-    const addMark = (cellIndex) => {
-        let xPosition = Math.floor(cellIndex / boardSize)
-        let yPosition = cellIndex % boardSize
-
-        // console.log({cellIndex, boardSize, xPosition, yPosition})
+    const addMark = (xPosition, yPosition) => {
 
         if(board[xPosition][yPosition] == "") {
             board[xPosition][yPosition] = activePlayer.mark
-            // console.log(board)
 
             render()
 
@@ -117,7 +175,7 @@ const GameBoard = (() => {
                     let [x, y] = gameWon.winningPlay[i]
                     winningCellIndex = x*3+y
                     const winningCell = document.querySelector(`.gamecell[data-index="${winningCellIndex}"]`)
-                    winningCell.classList.add('transitionEnd')
+                    winningCell.classList.add('cellTransition')
                     setTimeout(()=> winningCell.style.backgroundColor  = "#00f586", 1)
                 }
 
@@ -141,7 +199,7 @@ const GameBoard = (() => {
                 let gameCells = document.getElementsByClassName("gamecell")
 
                 for (let i = 0; i < gameCells.length; i++) {
-                    gameCells[i].classList.add('transitionEnd')
+                    gameCells[i].classList.add('cellTransition')
                     setTimeout(()=> gameCells[i].style.backgroundColor  = "#feffc2", 1)
                 }
 
@@ -155,8 +213,6 @@ const GameBoard = (() => {
                 updateActivePlayer()
             }
 
-        }else{
-            console.log("No hago nada")
         }
     }
 
@@ -203,9 +259,9 @@ const startGame = (gameMode) => {
     let player1 = playerFactory("X", "player")
     let player2 = null
 
-    if (gameMode = "PVP") {    
+    if (gameMode == "PVP") {    
         player2 = playerFactory("O", "player")
-    } else if (gameMode = "PVAI") {
+    } else if (gameMode == "PVAI") {
         player2 = playerFactory("O", "AI")
     }
 
