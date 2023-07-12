@@ -69,7 +69,11 @@ body {
     width: -moz-fit-content;
     width: fit-content;
     margin: 0px auto;
-    gap: 15px;
+    gap: 25px;
+}
+
+#menuButtonGroup button {
+    border-radius: 15px;
 }
 
 button {
