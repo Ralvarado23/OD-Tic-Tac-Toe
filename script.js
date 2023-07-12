@@ -3,11 +3,11 @@
 /********************/
 
 // Se generan 2 jugadores
-let player1 = undefined
-let player2 = undefined
+let player1, player2
 
 const buttonPvP = document.getElementById("buttonPvP")
 const buttonPvAIEasy = document.getElementById("buttonPvAIEasy")
+const buttonPvAIMedium = document.getElementById("buttonPvAIMedium")
 const buttonPvAIHard = document.getElementById("buttonPvAIHard")
 
 buttonPvP.onclick = () => {
@@ -19,6 +19,12 @@ buttonPvP.onclick = () => {
 buttonPvAIEasy.onclick = () => {
     player1 = playerFactory("X", "player")
     player2 = playerFactory("O", "AI", "easy")
+    startGame()
+}
+
+buttonPvAIMedium.onclick = () => {
+    player1 = playerFactory("X", "player")
+    player2 = playerFactory("O", "AI", "medium")
     startGame()
 }
 
@@ -91,13 +97,7 @@ const GameBoard = (() => {
                     gameCells[i].onclick = undefined
                 }
 
-                console.log({player1, player2})
-
-                if(player2.difficulty == "easy") {
-                    IAMoveEasy()
-                } else  if(player2.difficulty == "hard") {
-                    IAMoveHard()
-                }
+                IAMove()
             }
 
         } else {
@@ -108,11 +108,19 @@ const GameBoard = (() => {
         }
     }
 
-    // IA en modo Facil
-    const IAMoveEasy = () => {
+    // Test IA COMUN
+    const IAMove = () => {
         let possibleMoves = []
-        let emptyCenter = false
         let xPosition, yPosition
+        let winningPosition, losingPosition
+        let emptyCenter = false
+
+        // Decide si va a jugar aleatorio (0) o con lógica (1) si tiene dificultad media
+        let mediumFlag
+
+        if(player2.difficulty == "medium"){
+            mediumFlag = Math.floor(Math.random() * 2)
+        }
         
         // Devolver posiciones libres del tablero
         for (let i = 0; i < boardSize; i++) {
@@ -122,57 +130,27 @@ const GameBoard = (() => {
 
                     if(i == 1 && j == 1){
                         emptyCenter = true
-                        break
-                    }
-                }
-            }
-        }
-
-        // Si esta libre la posición central cogerla, si no mover aleatorio
-        if(emptyCenter){
-            xPosition = 1
-            yPosition = 1
-        } else {
-            let randomPlay = Math.floor(Math.random() * possibleMoves.length)
-            let randomPositions = possibleMoves[randomPlay]
-            xPosition = randomPositions[0]
-            yPosition = randomPositions[1]
-        }
-        
-        // Se asigna a la maquina un tiempo de respuesta entre 0.2s y 1s
-        let randomResponseTime = Math.floor(Math.random() * 800 + 200)
-        setTimeout(()=>{addMark(xPosition, yPosition)}, randomResponseTime)
-    }
-
-    // IA en Imposible
-    const IAMoveHard = () => {
-        let possibleMoves = []
-        let xPosition, yPosition
-        let winningPosition, losingPosition
-        
-        // Devolver posiciones libres del tablero
-        for (let i = 0; i < boardSize; i++) {
-            for (let j = 0; j < boardSize; j++) {
-                if(board[i][j] == ""){
-                    possibleMoves.push([i, j])
-
-                    // Comprueba si es una posición ganadora
-                    board[i][j] = "O"
-                    let gameStatus = checkGameStatus().result
-                    
-                    if(gameStatus == "Win"){
-                        winningPosition = {i, j}
                     }
 
-                    // Comprueba si es una jugada perdedora
-                    board[i][j] = "X"
-                    gameStatus = checkGameStatus().result
+                    if(player2.difficulty == "hard" || mediumFlag == 1){
+                        // Comprueba si es una posición ganadora
+                        board[i][j] = "O"
+                        let gameStatus = checkGameStatus().result
+                        
+                        if(gameStatus == "Win"){
+                            winningPosition = {i, j}
+                        }
 
-                    if(gameStatus == "Win"){
-                        losingPosition = {i, j}
+                        // Comprueba si es una jugada perdedora
+                        board[i][j] = "X"
+                        gameStatus = checkGameStatus().result
+
+                        if(gameStatus == "Win"){
+                            losingPosition = {i, j}
+                        }
+
+                        board[i][j] = ""
                     }
-
-                    board[i][j] = ""
                 }
             }
         }
@@ -184,11 +162,16 @@ const GameBoard = (() => {
         } else if(losingPosition != undefined) { // Realiza defensa
             xPosition = losingPosition.i
             yPosition = losingPosition.j
-        } else { // Hace una jugada aleatoria
-            let randomPlay = Math.floor(Math.random() * possibleMoves.length)
-            let randomPositions = possibleMoves[randomPlay]
-            xPosition = randomPositions[0]
-            yPosition = randomPositions[1]
+        } else { // Si esta libre la posición central cogerla, si no mover aleatorio
+            if(emptyCenter){
+                xPosition = 1
+                yPosition = 1
+            } else {
+                let randomPlay = Math.floor(Math.random() * possibleMoves.length)
+                let randomPositions = possibleMoves[randomPlay]
+                xPosition = randomPositions[0]
+                yPosition = randomPositions[1]
+            }
         }
 
         // Se asigna a la maquina un tiempo de respuesta entre 0.2s y 1s y se realiza la jugada
